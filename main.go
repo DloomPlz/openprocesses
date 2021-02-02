@@ -2,10 +2,19 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"openprocesses/core"
 )
 
 func main() {
-	ports := core.GetLinuxListeningSockets()
-	fmt.Printf("translated phrase: %q\n", ports)
+	/*
+		portsLinux, err := core.GetLinuxListeningSockets()
+		if err != nil {
+			log.Fatal(err)
+		}*/
+	machineInfos, err := core.GetWindowsListeningSockets()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Machine infos: %q\n", machineInfos)
 }
