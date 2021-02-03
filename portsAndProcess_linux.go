@@ -41,7 +41,7 @@ func parsePortsAndProcess(str string) (MachineInfos, error) {
 	return output, nil
 }
 
-func GetLinuxListeningSockets() (MachineInfos, error) {
+func GetListeningSockets() (MachineInfos, error) {
 
 	cmd := exec.Command("ss -n -p -l -A 'tcp' | grep -vE '(127.0.0.1|[::1]|[::]):' | grep -vE 'Local'") // will get all processes list with ip ports and process (needs su for some processes to display)
 
