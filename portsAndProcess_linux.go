@@ -15,8 +15,8 @@ import (
 	LISTEN 0      80                 *:3306            :    users:(("process2",pid=9534,fd=21))`
 */
 
-func parsePortsAndProcess(str string) (MachineInfos, error) {
-	var output = MachineInfos{}
+func parsePortsAndProcess(str string) ([]Infos, error) {
+	var output []Infos
 	//splits := strings.Split(strings.Replace(out, "\n\t", " ", -1), " ")
 	splits := strings.Split(strings.Replace(str, " ", "", -1), "\n")
 	for i := 0; i < len(splits); i++ {
@@ -36,12 +36,12 @@ func parsePortsAndProcess(str string) (MachineInfos, error) {
 		}
 
 		i := Infos{port: port, process: process}
-		output.MachineInfos = append(output.MachineInfos, i)
+		output = append(output, i)
 	}
 	return output, nil
 }
 
-func GetListeningSockets() (MachineInfos, error) {
+func GetListeningSockets() ([]Infos, error) {
 
 	cmd := exec.Command("ss -n -p -l -A 'tcp' | grep -vE '(127.0.0.1|[::1]|[::]):' | grep -vE 'Local'") // will get all processes list with ip ports and process (needs su for some processes to display)
 

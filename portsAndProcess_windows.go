@@ -59,36 +59,36 @@ func (p *PowerShell) execute(args ...string) (stdOut string, stdErr string, err 
 	return
 }
 
-func GetListeningSockets() (MachineInfos, error) {
+func GetListeningSockets() ([]Infos, error) {
 	// Get localAdress + ports : get-nettcpconnection | where {($_.State -eq 'Listen') -and ($_.RemoteAddress -eq '0.0.0.0') -and ($_.LocalAddress -ne '127.0.0.1')} | select LocalAddress,LocalPort
 
 	powershell := New()
 	stdOut, _, err := powershell.execute("get-nettcpconnection | where {($_.State -eq 'Listen') -and ($_.RemoteAddress -eq '0.0.0.0') -and ($_.LocalAddress -ne '127.0.0.1')} | select LocalPort,@{Name='Process';Expression={(Get-Process -Id $_.OwningProcess).ProcessName}}")
 	if err != nil {
-		return MachineInfos{}, err
+		return nil, err
 	}
 	fmt.Print(stdOut)
 
 	infos, err := parsePortsAndProcess(stdOut)
 	if err != nil {
-		return MachineInfos{}, err
+		return nil, err
 	}
 
 	return infos, nil
 }
 
-func parsePortsAndProcess(out string) (MachineInfos, error) {
-	var output = MachineInfos{}
+func parsePortsAndProcess(out string) ([]Infos, error) {
+	var output []Infos
 	lines := strings.Split(strings.Replace(out, "\r\n", "\n", -1), "\n")
 	for _, l := range lines[3 : len(lines)-3] {
 		space := regexp.MustCompile(`\s+`)
 		infos := strings.Split(space.ReplaceAllString(l, " "), " ")
 		port, err := strconv.Atoi(infos[1])
 		if err != nil {
-			return MachineInfos{}, err
+			return nil, err
 		}
 		i := Infos{port: port, process: infos[2]}
-		output.MachineInfos = append(output.MachineInfos, i)
+		output = append(output, i)
 	}
 
 	return output, nil
