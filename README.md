@@ -1,2 +1,2 @@
 # openprocesses
-Golang Program getting process with open sockets (only Linux ftm)
+Golang Program - Gather listening processes with associated ports on Linux or Windows Hosts
