@@ -1,3 +1,8 @@
+
+# Created by https://www.toptal.com/developers/gitignore/api/go,vscode,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=go,vscode,visualstudiocode
+
+### Go ###
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -13,3 +18,24 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+### Go Patch ###
+/vendor/
+/Godeps/
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
+
+### vscode ###
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# End of https://www.toptal.com/developers/gitignore/api/go,vscode,visualstudiocode
