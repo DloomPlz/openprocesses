@@ -41,7 +41,7 @@ func parsePortsAndProcess(str string) ([]PortsAndProcessesInformations, error) {
 
 func GetListeningSockets() ([]PortsAndProcessesInformations, error) {
 
-	cmd := exec.Command("ss -n -p -l -A 'tcp' | grep -vE '(127.0.0.1|[::1]|[::]):' | grep -vE 'Local'") // will get all processes list with ip ports and process (needs su for some processes to display)
+	cmd := exec.Command("/usr/bin/ss -n -p -l -A 'tcp' | grep -vE '(127.0.0.1|[::1]|[::]):' | grep -vE 'Local'") // will get all processes list with ip ports and process (needs su for some processes to display)
 
 	var out bytes.Buffer
 	cmd.Stdout = &out
