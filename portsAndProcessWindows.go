@@ -9,7 +9,26 @@ import (
 	"strings"
 )
 
-//get-nettcpconnection | where {($_.State -eq "Listen") -and ($_.RemoteAddress -eq '0.0.0.0')}
+//get-nettcpconnection | where {($_.State -eq 'Listen') -and ($_.RemoteAddress -eq '0.0.0.0') -and ($_.LocalAddress -ne '127.0.0.1')} | select LocalPort,@{Name='Process';Expression={(Get-Process -Id $_.OwningProcess).ProcessName}}
+
+/* EXAMPLE OUTPUT
+LocalPort Process
+--------- -------
+    49680 services
+    49668 spoolsv
+    49667 svchost
+    49666 svchost
+    49665 wininit
+    49664 lsass
+    45769 DiscSoftBusServiceLite
+    17500 Dropbox
+     5040 svchost
+     2179 vmms
+      139 System
+      139 System
+      139 System
+      135 svchost
+*/
 
 // PowerShell struct
 type PowerShell struct {
@@ -38,45 +57,36 @@ func (p *PowerShell) execute(args ...string) (stdOut string, stdErr string, err 
 	return
 }
 
-func GetWindowsListeningSockets() (WindowsInfos, error) {
+func GetWindowsListeningSockets() (MachineInfos, error) {
 	// Get localAdress + ports : get-nettcpconnection | where {($_.State -eq 'Listen') -and ($_.RemoteAddress -eq '0.0.0.0') -and ($_.LocalAddress -ne '127.0.0.1')} | select LocalAddress,LocalPort
 
 	powershell := New()
 	stdOut, _, err := powershell.execute("get-nettcpconnection | where {($_.State -eq 'Listen') -and ($_.RemoteAddress -eq '0.0.0.0') -and ($_.LocalAddress -ne '127.0.0.1')} | select LocalPort,@{Name='Process';Expression={(Get-Process -Id $_.OwningProcess).ProcessName}}")
 	if err != nil {
-		return WindowsInfos{}, err
+		return MachineInfos{}, err
 	}
 	fmt.Print(stdOut)
 
 	infos, err := parseInfos(stdOut)
 	if err != nil {
-		return WindowsInfos{}, err
+		return MachineInfos{}, err
 	}
 
 	return infos, nil
 }
 
-type WindowsInfos struct {
-	MachineInfo []Infos `json:"infos"`
-}
-
-type Infos struct {
-	port    int    `json:"port"`
-	process string `json:"process"`
-}
-
-func parseInfos(out string) (WindowsInfos, error) {
-	var output = WindowsInfos{}
+func parseInfos(out string) (MachineInfos, error) {
+	var output = MachineInfos{}
 	lines := strings.Split(strings.Replace(out, "\r\n", "\n", -1), "\n")
 	for _, l := range lines[3 : len(lines)-3] {
 		space := regexp.MustCompile(`\s+`)
 		infos := strings.Split(space.ReplaceAllString(l, " "), " ")
 		port, err := strconv.Atoi(infos[1])
 		if err != nil {
-			return WindowsInfos{}, err
+			return MachineInfos{}, err
 		}
 		i := Infos{port: port, process: infos[2]}
-		output.MachineInfo = append(output.MachineInfo, i)
+		output.MachineInfos = append(output.MachineInfos, i)
 	}
 
 	return output, nil
