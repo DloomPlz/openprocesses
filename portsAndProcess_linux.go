@@ -23,7 +23,7 @@ func parsePortsAndProcess(str string) ([]PortsAndProcessesInformations, error) {
 		tmpPort := strings.Split(splits[i], ":")
 		port, err := strconv.Atoi(tmpPort[1])
 		if err != nil {
-			return PortsAndProcessesInformations{}, err
+			return nil, err
 		}
 		var re = regexp.MustCompile(`(?m)"(.*?[^\\])"`)
 		process := re.FindString(splits[i])
@@ -48,12 +48,12 @@ func GetListeningSockets() ([]PortsAndProcessesInformations, error) {
 
 	err := cmd.Run()
 	if err != nil {
-		return PortsAndProcessesInformations{}, err
+		return nil, err
 	}
 
 	infos, err := parsePortsAndProcess(out.String())
 	if err != nil {
-		return PortsAndProcessesInformations{}, err
+		return nil, err
 	}
 
 	return infos, nil
