@@ -3,7 +3,6 @@
 package core
 
 import (
-	"bytes"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -41,17 +40,14 @@ func parsePortsAndProcess(str string) ([]PortsAndProcessesInformations, error) {
 
 func GetListeningSockets() ([]PortsAndProcessesInformations, error) {
 
-	cmd := exec.Command("/usr/bin/ss -n -p -l -A 'tcp' | grep -vE '(127.0.0.1|[::1]|[::]):' | grep -vE 'Local'") // will get all processes list with ip ports and process (needs su for some processes to display)
+	cmd := "/usr/bin/ss -n -p -l -A 'tcp' | grep -vE '(127.0.0.1|[::1]|[::]):' | grep -vE 'Local'" // will get all processes list with ip ports and process (needs su for some processes to display)
 
-	var out bytes.Buffer
-	cmd.Stdout = &out
-
-	err := cmd.Run()
+	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		return nil, err
 	}
 
-	infos, err := parsePortsAndProcess(out.String())
+	infos, err := parsePortsAndProcess(string(out))
 	if err != nil {
 		return nil, err
 	}
