@@ -1,6 +1,6 @@
 package core
 
-type Infos struct {
-	port    int    `json:"port"`
-	process string `json:"process"`
+type PortsAndProcessesInformations struct {
+	Port    int    `json:"port"`
+	Process string `json:"process"`
 }

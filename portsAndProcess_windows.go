@@ -59,7 +59,7 @@ func (p *PowerShell) execute(args ...string) (stdOut string, stdErr string, err 
 	return
 }
 
-func GetListeningSockets() ([]Infos, error) {
+func GetListeningSockets() ([]PortsAndProcessesInformations, error) {
 	// Get localAdress + ports : get-nettcpconnection | where {($_.State -eq 'Listen') -and ($_.RemoteAddress -eq '0.0.0.0') -and ($_.LocalAddress -ne '127.0.0.1')} | select LocalAddress,LocalPort
 
 	powershell := New()
@@ -77,8 +77,8 @@ func GetListeningSockets() ([]Infos, error) {
 	return infos, nil
 }
 
-func parsePortsAndProcess(out string) ([]Infos, error) {
-	var output []Infos
+func parsePortsAndProcess(out string) ([]PortsAndProcessesInformations, error) {
+	var output []PortsAndProcessesInformations
 	lines := strings.Split(strings.Replace(out, "\r\n", "\n", -1), "\n")
 	for _, l := range lines[3 : len(lines)-3] {
 		space := regexp.MustCompile(`\s+`)
@@ -87,7 +87,7 @@ func parsePortsAndProcess(out string) ([]Infos, error) {
 		if err != nil {
 			return nil, err
 		}
-		i := Infos{port: port, process: infos[2]}
+		i := PortsAndProcessesInformations{Port: port, Process: infos[2]}
 		output = append(output, i)
 	}
 
