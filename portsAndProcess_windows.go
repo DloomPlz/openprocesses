@@ -4,7 +4,6 @@ package core
 
 import (
 	"bytes"
-	"fmt"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -67,7 +66,6 @@ func GetListeningSockets() ([]PortsAndProcessesInformations, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Print(stdOut)
 
 	infos, err := parsePortsAndProcess(stdOut)
 	if err != nil {
