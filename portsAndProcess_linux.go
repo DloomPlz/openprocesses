@@ -19,9 +19,9 @@ func parsePortsAndProcess(str string) ([]PortsAndProcessesInformations, error) {
 
 	splits := strings.Split(str, "\n")
 	for i := 0; i < len(splits); i++ {
-		var rePorts = regexp.MustCompile(`(?m) \d{2,5}`)
+		var rePorts = regexp.MustCompile(`(?m):\d{2,5}`)
 		tmpPort := rePorts.FindString(splits[i])
-		tmpPort = strings.Replace(tmpPort, " ", "", -1)
+		tmpPort = strings.Replace(tmpPort, ":", "", -1)
 
 		if tmpPort == "" {
 			continue
