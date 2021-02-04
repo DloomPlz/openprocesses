@@ -17,15 +17,20 @@ import (
 func parsePortsAndProcess(str string) ([]PortsAndProcessesInformations, error) {
 	var output []PortsAndProcessesInformations
 
-	splits := strings.Split(strings.Replace(str, " ", "", -1), "\n")
+	splits := strings.Split(str, "\n")
 	for i := 0; i < len(splits); i++ {
-		tmpPort := strings.Split(splits[i], ":")
-		port, err := strconv.Atoi(tmpPort[1])
+		var rePorts = regexp.MustCompile(`(?m) \d{2,5}`)
+		tmpPort := rePorts.FindString(splits[i])
+
+		if tmpPort == "" {
+			continue
+		}
+		port, err := strconv.Atoi(tmpPort)
 		if err != nil {
 			return nil, err
 		}
-		var re = regexp.MustCompile(`(?m)"(.*?[^\\])"`)
-		process := re.FindString(splits[i])
+		var reProcess = regexp.MustCompile(`(?m)"(.*?[^\\])"`)
+		process := reProcess.FindString(splits[i])
 		if process != "" {
 			process = process[1 : len(process)-1] // delete quotes
 		} else {
@@ -40,7 +45,7 @@ func parsePortsAndProcess(str string) ([]PortsAndProcessesInformations, error) {
 
 func GetListeningSockets() ([]PortsAndProcessesInformations, error) {
 
-	cmd := "/usr/bin/ss -n -p -l -A 'tcp' | grep -vE '(127.0.0.1|[::1]|[::]):' | grep -vE 'Local'" // will get all processes list with ip ports and process (needs su for some processes to display)
+	cmd := `/usr/bin/ss -n -p -l -A 'tcp' | grep -vE '(127.0.0.1|[::1]|[::]):' | grep -vE 'Local'` // will get all processes list with ip ports and process (needs su for some processes to display)
 
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
